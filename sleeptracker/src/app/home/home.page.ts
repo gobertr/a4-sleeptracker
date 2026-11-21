@@ -1,10 +1,12 @@
 import { DatePipe } from '@angular/common';
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import {
-  IonButton, IonContent, IonDatetime, IonHeader, IonItem, IonLabel, IonList,
-  IonModal, IonTitle, IonToolbar,
+  IonButton, IonButtons, IonContent, IonDatetime, IonHeader, IonItem, IonLabel, IonList,
+  IonModal, IonRadio, IonRadioGroup, IonTitle, IonToolbar,
 } from '@ionic/angular/standalone';
 import { OvernightSleepData } from '../data/overnight-sleep-data';
+import { StanfordSleepinessData } from '../data/stanford-sleepiness-data';
 import { SleepService } from '../services/sleep.service';
 
 type SleepField = 'bedtime' | 'wakeUp';
@@ -14,14 +16,23 @@ type SleepField = 'bedtime' | 'wakeUp';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
   imports: [
-    DatePipe, IonButton, IonContent, IonDatetime, IonHeader, IonItem, IonLabel,
-    IonList, IonModal, IonTitle, IonToolbar,
+    DatePipe, IonButton, IonButtons, IonContent, IonDatetime, IonHeader, IonItem, IonLabel,
+    IonList, IonModal, IonRadio, IonRadioGroup, IonTitle, IonToolbar, RouterLink,
   ],
 })
 export class HomePage {
   bedtime: Date | null = null;
   wakeUp: Date | null = null;
   lastSaved: OvernightSleepData | null = null;
+  savingSleep = false;
+  sleepSaveFailed = false;
+
+  sleepinessScale = StanfordSleepinessData.ScaleValues;
+  sleepinessRating: number | null = null;
+  sleepinessTime = '';
+  lastSavedSleepiness: StanfordSleepinessData | null = null;
+  savingSleepiness = false;
+  sleepinessSaveFailed = false;
 
   pickerField: SleepField | null = null;
   pickerValue = '';
@@ -88,16 +99,63 @@ export class HomePage {
     this.pickerError = '';
   }
 
-  saveSleep() {
-    if (!this.bedtime || !this.wakeUp || this.timeError) {
+  async saveSleep() {
+    if (this.savingSleep || !this.bedtime || !this.wakeUp || this.timeError) {
       return;
     }
 
     const entry = new OvernightSleepData(this.bedtime, this.wakeUp);
-    this.sleepService.logOvernightData(entry);
-    this.lastSaved = entry;
-    this.bedtime = null;
-    this.wakeUp = null;
+    this.savingSleep = true;
+    this.sleepSaveFailed = false;
+    this.lastSaved = null;
+    try {
+      await this.sleepService.logOvernightData(entry);
+      this.lastSaved = entry;
+      this.bedtime = null;
+      this.wakeUp = null;
+    } catch {
+      this.sleepSaveFailed = true;
+    } finally {
+      this.savingSleep = false;
+    }
+  }
+
+  get sleepinessTimeError(): string {
+    if (!this.sleepinessTime) {
+      return '';
+    }
+
+    const time = new Date(this.sleepinessTime);
+    if (Number.isNaN(time.getTime()) || this.localDateTime(time) !== this.sleepinessTime) {
+      return 'Choose a valid date and time.';
+    }
+    if (time.getTime() > Date.now()) {
+      return 'Choose a time that has already passed.';
+    }
+    return '';
+  }
+
+  async saveSleepiness() {
+    const rating = this.sleepinessRating;
+    if (this.savingSleepiness || rating === null || !this.sleepinessScale[rating] || this.sleepinessTimeError) {
+      return;
+    }
+
+    const time = this.sleepinessTime ? new Date(this.sleepinessTime) : new Date();
+    const entry = new StanfordSleepinessData(rating, time);
+    this.savingSleepiness = true;
+    this.sleepinessSaveFailed = false;
+    this.lastSavedSleepiness = null;
+    try {
+      await this.sleepService.logSleepinessData(entry);
+      this.lastSavedSleepiness = entry;
+      this.sleepinessRating = null;
+      this.sleepinessTime = '';
+    } catch {
+      this.sleepinessSaveFailed = true;
+    } finally {
+      this.savingSleepiness = false;
+    }
   }
 
   private localDateTime(date: Date): string {

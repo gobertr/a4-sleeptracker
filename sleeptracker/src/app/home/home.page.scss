@@ -58,7 +58,8 @@ h1 {
   padding: 16px;
 }
 
-.saved-sleep h2 {
+.saved-sleep h2,
+.saved-sleep h3 {
   margin: 0;
   font-size: 1.125rem;
   font-weight: 700;
@@ -74,6 +75,44 @@ h1 {
 .saved-sleep dd {
   margin: 0;
   text-align: right;
+}
+
+.sleepiness-section {
+  margin-top: 32px;
+}
+
+.sleepiness-section > h2 {
+  margin: 0 0 12px;
+  font-weight: 700;
+}
+
+.sleepiness-options ion-item {
+  --min-height: 48px;
+}
+
+.sleepiness-options ion-radio {
+  width: 100%;
+}
+
+.sleepiness-time {
+  margin-top: 16px;
+}
+
+.sleepiness-time input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 1px solid var(--ion-color-step-200, #d6d6d6);
+  border-radius: 8px;
+  background: var(--ion-background-color, #fff);
+  color: inherit;
+  font: inherit;
+}
+
+.sleepiness-time p,
+.sleepiness-confirmation p {
+  margin: 8px 0 0;
 }
 
 .time-picker {

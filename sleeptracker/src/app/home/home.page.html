@@ -1,6 +1,11 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Sleep Tracker</ion-title>
+    <ion-title>Sleepi</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/history" [disabled]="savingSleep || savingSleepiness">
+        History
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -9,13 +14,13 @@
     <h1>Log overnight sleep</h1>
 
     <ion-list class="sleep-fields">
-      <ion-item [button]="true" [detail]="true" (click)="openPicker('bedtime')">
+      <ion-item [button]="true" [detail]="true" [disabled]="savingSleep" (click)="openPicker('bedtime')">
         <ion-label>
           <span class="field-label">Bedtime</span>
           <span class="field-value">{{ (bedtime | date:'MMM d, y, h:mm a') ?? 'Choose date and time' }}</span>
         </ion-label>
       </ion-item>
-      <ion-item [button]="true" [detail]="true" lines="none" (click)="openPicker('wakeUp')">
+      <ion-item [button]="true" [detail]="true" [disabled]="savingSleep" lines="none" (click)="openPicker('wakeUp')">
         <ion-label>
           <span class="field-label">Wake-up time</span>
           <span class="field-value">{{ (wakeUp | date:'MMM d, y, h:mm a') ?? 'Choose date and time' }}</span>
@@ -31,9 +36,13 @@
       }
     </div>
 
-    <ion-button class="save-button" expand="block" [disabled]="!duration" (click)="saveSleep()">
-      Save sleep
+    <ion-button class="save-button" expand="block" [disabled]="savingSleep || !duration" (click)="saveSleep()">
+      {{ savingSleep ? 'Saving…' : 'Save sleep' }}
     </ion-button>
+
+    @if (sleepSaveFailed) {
+      <p role="alert" class="time-error">Couldn't save your sleep. Try again.</p>
+    }
 
     <div aria-live="polite">
       @if (lastSaved; as entry) {
@@ -50,6 +59,71 @@
         </section>
       }
     </div>
+    <section class="sleepiness-section" aria-labelledby="sleepiness-title">
+      <h2 id="sleepiness-title">Log daytime sleepiness</h2>
+      <p>Pick one description from the Stanford Sleepiness Scale.</p>
+
+      <ion-list class="sleep-fields sleepiness-options">
+        <ion-radio-group
+          aria-label="Stanford Sleepiness Scale"
+          [value]="sleepinessRating"
+          (ionChange)="sleepinessRating = $event.detail.value"
+        >
+          @for (description of sleepinessScale; track $index; let rating = $index) {
+            @if (description) {
+              <ion-item [lines]="rating === 7 ? 'none' : 'inset'">
+                <ion-radio [value]="rating" [disabled]="savingSleepiness" labelPlacement="end" justify="start">
+                  <span class="ion-text-wrap">{{ rating }}. {{ description }}</span>
+                </ion-radio>
+              </ion-item>
+            }
+          }
+        </ion-radio-group>
+      </ion-list>
+
+      <div class="sleepiness-time">
+        <label class="field-label" for="sleepiness-time">Time you felt this way (optional)</label>
+        <input
+          #feltAt
+          id="sleepiness-time"
+          type="datetime-local"
+          [value]="sleepinessTime"
+          [disabled]="savingSleepiness"
+          (input)="sleepinessTime = feltAt.value"
+          aria-describedby="sleepiness-time-help sleepiness-time-error"
+          [attr.aria-invalid]="sleepinessTimeError ? 'true' : null"
+        >
+        <p id="sleepiness-time-help" class="field-value">Leave blank to use the current time.</p>
+        <div id="sleepiness-time-error" aria-live="polite">
+          @if (sleepinessTimeError; as error) {
+            <p class="time-error">{{ error }}</p>
+          }
+        </div>
+      </div>
+
+      <ion-button
+        class="save-button"
+        expand="block"
+        [disabled]="savingSleepiness || sleepinessRating === null || !!sleepinessTimeError || feltAt.validity.badInput"
+        (click)="saveSleepiness()"
+      >
+        {{ savingSleepiness ? 'Saving…' : 'Save sleepiness' }}
+      </ion-button>
+
+      @if (sleepinessSaveFailed) {
+        <p role="alert" class="time-error">Couldn't save your sleepiness. Try again.</p>
+      }
+
+      <div aria-live="polite">
+        @if (lastSavedSleepiness; as entry) {
+          <section class="saved-sleep sleepiness-confirmation" aria-labelledby="sleepiness-saved-title">
+            <h3 id="sleepiness-saved-title">Sleepiness saved</h3>
+            <p>{{ entry.summaryString() }}</p>
+            <p class="field-value">{{ entry.loggedAt | date:'MMM d, y, h:mm a' }}</p>
+          </section>
+        }
+      </div>
+    </section>
   </main>
 
   <ion-modal

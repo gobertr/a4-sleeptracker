@@ -1,50 +1,86 @@
 import { Injectable } from '@angular/core';
-import { SleepData } from '../data/sleep-data';
+import { Drivers, Storage } from '@ionic/storage';
 import { OvernightSleepData } from '../data/overnight-sleep-data';
 import { StanfordSleepinessData } from '../data/stanford-sleepiness-data';
 
+type SavedOvernight = {
+  id: string;
+  sleepStart: string;
+  sleepEnd: string;
+  loggedAt: string;
+};
+
+type SavedSleepiness = {
+  id: string;
+  rating: number;
+  loggedAt: string;
+};
+
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SleepService {
-	private static LoadDefaultData:boolean = true;
-	public static AllSleepData:SleepData[] = [];
-	public static AllOvernightData:OvernightSleepData[] = [];
-	public static AllSleepinessData:StanfordSleepinessData[] = [];
+  private storage = new Storage({
+    name: 'sleeptracker',
+    driverOrder: [Drivers.IndexedDB, Drivers.LocalStorage],
+  });
+  private openingStorage?: Promise<Storage>;
 
-	constructor() {
-		if(SleepService.LoadDefaultData) {
-			this.addDefaultData();
-		SleepService.LoadDefaultData = false;
-	}
-	}
+  private openStorage() {
+    if (!this.openingStorage) {
+      this.openingStorage = this.storage.create().catch(error => {
+        this.openingStorage = undefined;
+        throw error;
+      });
+    }
+    return this.openingStorage;
+  }
 
-	private addDefaultData() {
-		var goToBed = new Date();
-		goToBed.setDate(goToBed.getDate() - 1); //set to yesterday
-		goToBed.setHours(1, 3, 0); //1:03am
-		var wakeUp = new Date();
-		wakeUp.setTime(goToBed.getTime() + 8 * 60 * 60 * 1000); //Sleep for exactly eight hours, waking up at 9:03am
-		this.logOvernightData(new OvernightSleepData(goToBed, wakeUp)); // add that person was asleep 1am-9am yesterday
-		var sleepinessDate = new Date();
-		sleepinessDate.setDate(sleepinessDate.getDate() - 1); //set to yesterday
-		sleepinessDate.setHours(14, 38, 0); //2:38pm
-		this.logSleepinessData(new StanfordSleepinessData(4, sleepinessDate)); // add sleepiness at 2pm
-		goToBed = new Date();
-		goToBed.setDate(goToBed.getDate() - 1); //set to yesterday
-		goToBed.setHours(23, 11, 0); //11:11pm
-		wakeUp = new Date();
-		wakeUp.setTime(goToBed.getTime() + 9 * 60 * 60 * 1000); //Sleep for exactly nine hours
-		this.logOvernightData(new OvernightSleepData(goToBed, wakeUp));
-	}
+  async logOvernightData(entry: OvernightSleepData) {
+    const storage = await this.openStorage();
+    // Each log gets its own key, so a new save leaves the earlier entries in place.
+    const saved: SavedOvernight = {
+      id: entry.id,
+      sleepStart: entry.sleepStart.toISOString(),
+      sleepEnd: entry.sleepEnd.toISOString(),
+      loggedAt: entry.loggedAt.toISOString(),
+    };
+    await storage.set('overnight-' + entry.id, saved);
+  }
 
-	public logOvernightData(sleepData:OvernightSleepData) {
-		SleepService.AllSleepData.push(sleepData);
-		SleepService.AllOvernightData.push(sleepData);
-	}
+  async logSleepinessData(entry: StanfordSleepinessData) {
+    const storage = await this.openStorage();
+    const saved: SavedSleepiness = {
+      id: entry.id,
+      rating: entry.loggedValue,
+      loggedAt: entry.loggedAt.toISOString(),
+    };
+    await storage.set('sleepiness-' + entry.id, saved);
+  }
 
-	public logSleepinessData(sleepData:StanfordSleepinessData) {
-		SleepService.AllSleepData.push(sleepData);
-		SleepService.AllSleepinessData.push(sleepData);
-	}
+  async getLogs() {
+    const storage = await this.openStorage();
+    const overnight: OvernightSleepData[] = [];
+    const sleepiness: StanfordSleepinessData[] = [];
+
+    // Turn the saved date strings back into Dates for the model methods and the history page.
+    await storage.forEach((value, key) => {
+      if (key.startsWith('overnight-')) {
+        const saved: SavedOvernight = value;
+        const entry = new OvernightSleepData(new Date(saved.sleepStart), new Date(saved.sleepEnd));
+        entry.id = saved.id;
+        entry.loggedAt = new Date(saved.loggedAt);
+        overnight.push(entry);
+      } else if (key.startsWith('sleepiness-')) {
+        const saved: SavedSleepiness = value;
+        const entry = new StanfordSleepinessData(saved.rating, new Date(saved.loggedAt));
+        entry.id = saved.id;
+        sleepiness.push(entry);
+      }
+    });
+
+    overnight.sort((a, b) => b.sleepStart.getTime() - a.sleepStart.getTime());
+    sleepiness.sort((a, b) => b.loggedAt.getTime() - a.loggedAt.getTime());
+    return { overnight, sleepiness };
+  }
 }
