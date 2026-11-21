@@ -1,27 +1,93 @@
-#container {
-  text-align: center;
-
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+.sleep-page {
+  max-width: 33rem;
+  margin-inline: auto;
+  padding: 24px 16px;
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
+h1 {
+  margin: 0 0 20px;
+  font-size: 1.75rem;
+  font-weight: 700;
 }
 
-#container p {
-  font-size: 16px;
-  line-height: 22px;
+.sleep-fields,
+.saved-sleep {
+  border: 1px solid var(--ion-color-step-200, #d6d6d6);
+  border-radius: 14px;
+}
 
-  color: #8c8c8c;
+.sleep-fields {
+  padding: 0;
+  overflow: hidden;
+}
 
+.sleep-fields ion-item {
+  --min-height: 68px;
+}
+
+.field-label,
+.field-value {
+  display: block;
+}
+
+.field-label {
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.field-value {
+  color: var(--ion-color-step-650, #595959);
+  font-size: 0.9rem;
+}
+
+.sleep-preview p {
+  margin: 16px 0 0;
+}
+
+.time-error {
+  color: var(--ion-color-danger-shade);
+}
+
+.save-button {
+  min-height: 48px;
+  margin: 18px 0 0;
+}
+
+.saved-sleep {
+  margin-top: 24px;
+  padding: 16px;
+}
+
+.saved-sleep h2 {
   margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
 }
 
-#container a {
-  text-decoration: none;
+.saved-sleep dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 16px;
+  margin: 12px 0 0;
+}
+
+.saved-sleep dd {
+  margin: 0;
+  text-align: right;
+}
+
+.time-picker {
+  --width: min(calc(100% - 24px), 360px);
+  --height: auto;
+  --max-height: calc(100% - 24px);
+  --border-radius: 16px;
+}
+
+.time-picker::part(content) {
+  overflow: auto;
+}
+
+.time-picker ion-datetime {
+  width: 100%;
+  max-width: none;
 }

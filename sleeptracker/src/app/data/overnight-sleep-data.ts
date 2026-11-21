@@ -1,8 +1,8 @@
 import { SleepData } from './sleep-data';
 
 export class OvernightSleepData extends SleepData {
-	private sleepStart:Date;
-	private sleepEnd:Date;
+	readonly sleepStart:Date;
+	readonly sleepEnd:Date;
 
 	constructor(sleepStart:Date, sleepEnd:Date) {
 		super();
@@ -11,14 +11,17 @@ export class OvernightSleepData extends SleepData {
 	}
 
 	override summaryString():string {
-		var sleepStart_ms = this.sleepStart.getTime();
-		var sleepEnd_ms = this.sleepEnd.getTime();
+		return OvernightSleepData.formatDuration(this.sleepStart, this.sleepEnd);
+	}
 
-		// Calculate the difference in milliseconds
-		var difference_ms = sleepEnd_ms - sleepStart_ms;
-		    
-		// Convert to hours and minutes
-		return Math.floor(difference_ms / (1000*60*60)) + " hours, " + Math.floor(difference_ms / (1000*60) % 60) + " minutes.";
+	static formatDuration(start:Date, end:Date):string {
+		const totalMinutes = Math.floor((end.getTime() - start.getTime()) / 60_000);
+		const hours = Math.floor(totalMinutes / 60);
+		const minutes = totalMinutes % 60;
+		const hourLabel = hours === 1 ? 'hour' : 'hours';
+		const minuteLabel = minutes === 1 ? 'minute' : 'minutes';
+
+		return `${hours} ${hourLabel}, ${minutes} ${minuteLabel}`;
 	}
 
 	override dateString():string {
