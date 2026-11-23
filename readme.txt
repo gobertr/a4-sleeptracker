@@ -1,19 +1,19 @@
---Readme document for Daniel Salameh and Robert Gellner, *email(s)*, *UCI id(s)*--
+--Readme document for Daniel Salameh and Robert Gellner, dnsalame@uci.edu and rgellner@uci.edu, 75123614 and --
 
 1. How many assignment points do you believe you completed (replace the *'s with your numbers)?
 
 */10
-- */1 The ability to log overnight sleep
-- */1 The ability to log sleepiness during the day
-- */1 The ability to view these two categories of logged data
-- */2 Either using a native device resource or backing up logged data
-- */2 Following good principles of mobile design
-- */2 Creating a compelling app
+- 1/1 The ability to log overnight sleep
+- 1/1 The ability to log sleepiness during the day
+- 1/1 The ability to view these two categories of logged data
+- 2/2 Either using a native device resource or backing up logged data
+- 2/2 Following good principles of mobile design
+- 2/2 Creating a compelling app
 - */1 A readme and demo video which explains how these features were implemented and their design rationale
 
 2. How long, in hours, did it take you to complete this assignment?
 
-
+This assignment took about 15 hours
 
 3. What online resources did you consult when completing this assignment? (list specific URLs)
 
@@ -37,36 +37,36 @@ We worked together to complete the assignment. We did a ton of peer programming 
 
 5. Is there anything special we need to know in order to run your code?
 
-
+No
 
 --Aim for no more than two sentences for each of the following questions.--
 
 
 6. Did you design your app with a particular type of user in mind? If so, whom?
 
-
+We are assuming that the user has decent technology literacy. We also designed it so a user who doesn't have much time get in and out quickly.
 
 7. Did you design your app specifically for iOS or Android, or both?
 
-
+We designed Sleepi for both ios and android. The bottom tabs and date picker use Ionic's default styling for each platform.
 
 8. How can a person log overnight sleep in your app? Why did you choose to support logging overnight sleep in this way?
 
-
+A person logs sleepiness by inputing their sleep time and then their awake time. We had originally designed a system where the user would tell the app that they are going to bed
+then would open up the app again when they wake up and stop the "sleep timer". We realized that people may forget to start it at night so the new version only requires opening
+the app once when they wake up. The wake up date and time are automatically automatically set to the current date and time.
 
 9. How can a person log sleepiness during the day in your app? Why did you choose to support logging sleepiness in this way?
 
-
+A user can log their sleepiness on the sleepiness tab by answering a 1 question poll that asks them about their current sleepiness level. This then gets saved and viewable in the history tab.
 
 10. How can a person view the data they logged in your app? Why did you choose to support viewing logged data in this way?
 
-Tap History in the top toolbar. The page shows overnight sleep and daytime sleepiness in separate lists with the latest entries first, so people can find recent logs quickly.
-
+Tap History in the toolbar. The page shows overnight sleep and daytime sleepiness in separate lists with the latest entries first, so people can find recent logs quickly.
 
 11. Which feature choose--using a native device resource, backing up logged data, or both?
 
-Backing up logged data (Option 2).
-
+We chose to back up logged data (Option 2).
 
 12. If you used a native device resource, what feature did you add? How does this feature change the app's experience for a user?
 
