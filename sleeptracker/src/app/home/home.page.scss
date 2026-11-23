@@ -1,132 +1,39 @@
 .sleep-page {
-  max-width: 33rem;
-  margin-inline: auto;
-  padding: 24px 16px;
+  padding: 16px;
+  padding-top: calc(16px + var(--ion-safe-area-top));
+  text-align: center;
 }
 
 h1 {
-  margin: 0 0 20px;
-  font-size: 1.75rem;
-  font-weight: 700;
-}
-
-.sleep-fields,
-.saved-sleep {
-  border: 1px solid var(--ion-color-step-200, #d6d6d6);
-  border-radius: 14px;
-}
-
-.sleep-fields {
-  padding: 0;
-  overflow: hidden;
-}
-
-.sleep-fields ion-item {
-  --min-height: 68px;
-}
-
-.field-label,
-.field-value {
-  display: block;
-}
-
-.field-label {
-  margin-bottom: 4px;
-  font-weight: 600;
-}
-
-.field-value {
-  color: var(--ion-color-step-650, #595959);
-  font-size: 0.9rem;
-}
-
-.sleep-preview p {
-  margin: 16px 0 0;
-}
-
-.time-error {
-  color: var(--ion-color-danger-shade);
-}
-
-.save-button {
-  min-height: 48px;
-  margin: 18px 0 0;
-}
-
-.saved-sleep {
-  margin-top: 24px;
-  padding: 16px;
-}
-
-.saved-sleep h2,
-.saved-sleep h3 {
-  margin: 0;
-  font-size: 1.125rem;
-  font-weight: 700;
-}
-
-.saved-sleep dl {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 8px 16px;
-  margin: 12px 0 0;
-}
-
-.saved-sleep dd {
-  margin: 0;
-  text-align: right;
-}
-
-.sleepiness-section {
-  margin-top: 32px;
-}
-
-.sleepiness-section > h2 {
-  margin: 0 0 12px;
-  font-weight: 700;
-}
-
-.sleepiness-options ion-item {
-  --min-height: 48px;
-}
-
-.sleepiness-options ion-radio {
+  text-align: center;
   width: 100%;
+  margin: 0 0 80px;
+  font-size: 40px;
 }
 
-.sleepiness-time {
-  margin-top: 16px;
+.label {
+  font-size: 28px;
+  font-weight: 700;
+  color: #9ba1c7;
+  margin: 0;
 }
 
-.sleepiness-time input {
-  box-sizing: border-box;
-  width: 100%;
-  min-height: 48px;
-  padding: 8px 12px;
-  border: 1px solid var(--ion-color-step-200, #d6d6d6);
-  border-radius: 8px;
-  background: var(--ion-background-color, #fff);
-  color: inherit;
-  font: inherit;
+.big-time {
+  font-size: 64px;
+  font-weight: 700;
+  color: #e8eaf6;
+  margin: 8px 0;
 }
 
-.sleepiness-time p,
-.sleepiness-confirmation p {
-  margin: 8px 0 0;
+.since {
+  font-style: italic;
+  color: #9ba1c7;
+  margin: 0 0 48px;
 }
 
-.time-picker {
-  --width: min(calc(100% - 24px), 360px);
-  --height: auto;
-  --max-height: calc(100% - 24px);
+ion-button {
   --border-radius: 16px;
-}
-
-.time-picker::part(content) {
-  overflow: auto;
-}
-
-.time-picker ion-datetime {
-  width: 100%;
-  max-width: none;
+  height: 64px;
+  font-size: 22px;
+  font-weight: 700;
 }

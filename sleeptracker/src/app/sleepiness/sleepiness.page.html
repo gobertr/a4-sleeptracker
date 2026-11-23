@@ -1,35 +1,18 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Log sleepiness</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
   <main class="sleepiness-page">
-    <div class="scale" role="radiogroup" aria-label="Stanford Sleepiness Scale">
-      @for (level of levels; track level) {
-        <button
-          type="button"
-          class="scale-row"
-          role="radio"
-          [class.selected]="rating === level"
-          [attr.aria-checked]="rating === level"
-          (click)="rating = level"
-        >
-          <span class="scale-number">{{ level }}</span>
-          <span class="scale-text">{{ scale[level] }}</span>
-        </button>
-      }
-    </div>
+    <h2>Log sleepiness</h2>
 
-    <p class="prompt">How sleepy do you feel right now?</p>
-
-    <ion-button expand="block" size="large" [disabled]="rating === null || saving" (click)="save()">
-      {{ saving ? 'Saving…' : 'Submit' }}
-    </ion-button>
-
-    @if (failed) {
-      <p role="alert" class="error">Couldn't save. Try again.</p>
+    @for (level of levels; track level) {
+      <button class="scale-row" [class.selected]="rating === level" (click)="rating = level">
+        <span class="scale-number">{{ level }}</span>
+        <span class="scale-text">{{ scale[level] }}</span>
+      </button>
     }
+
+    <p>How sleepy do you feel right now?</p>
+
+    <ion-button expand="block" [disabled]="rating === null" (click)="save()">Submit</ion-button>
+
+    <p>{{ message }}</p>
   </main>
 </ion-content>

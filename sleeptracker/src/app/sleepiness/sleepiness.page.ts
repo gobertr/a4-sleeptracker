@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
-import {
-  IonButton, IonContent, IonHeader, IonTitle, IonToolbar, ToastController,
-} from '@ionic/angular/standalone';
+import { IonButton, IonContent } from '@ionic/angular/standalone';
 import { StanfordSleepinessData } from '../data/stanford-sleepiness-data';
 import { SleepService } from '../services/sleep.service';
 
@@ -9,36 +7,23 @@ import { SleepService } from '../services/sleep.service';
   selector: 'app-sleepiness',
   templateUrl: 'sleepiness.page.html',
   styleUrls: ['sleepiness.page.scss'],
-  imports: [IonButton, IonContent, IonHeader, IonTitle, IonToolbar],
+  imports: [IonButton, IonContent],
 })
 export class SleepinessPage {
-  scale = StanfordSleepinessData.ScaleValues; // indexed 1-7 (index 0 is empty)
-  levels = [7, 6, 5, 4, 3, 2, 1];             // your design shows 7 at the top
+  scale = StanfordSleepinessData.ScaleValues;
+  levels = [7, 6, 5, 4, 3, 2, 1];
   rating: number | null = null;
-  saving = false;
-  failed = false;
+  message = '';
 
-  constructor(private sleepService: SleepService, private toast: ToastController) {}
+  constructor(private sleepService: SleepService) {}
 
   async save() {
-    if (this.saving || this.rating === null) return;
-
-    this.saving = true;
-    this.failed = false;
-    try {
-      // "When they felt this way" is required by the assignment, so we log the current time.
-      await this.sleepService.logSleepinessData(new StanfordSleepinessData(this.rating, new Date()));
-      this.rating = null;
-      const t = await this.toast.create({
-        message: 'Sleepiness saved',
-        duration: 1800,
-        position: 'top',
-      });
-      await t.present();
-    } catch {
-      this.failed = true;
-    } finally {
-      this.saving = false;
+    if (this.rating === null) {
+      return;
     }
+    let entry = new StanfordSleepinessData(this.rating, new Date());
+    await this.sleepService.logSleepinessData(entry);
+    this.rating = null;
+    this.message = 'Sleepiness saved';
   }
 }
