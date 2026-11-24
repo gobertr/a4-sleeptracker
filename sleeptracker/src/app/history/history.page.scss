@@ -94,7 +94,7 @@
 }
 
 .sleepiness-bar {
-  background: #ffc857;
+  background: #dfbb73;
 }
 
 .bar-value {
@@ -422,8 +422,10 @@ ion-label p {
   height: 48px;
 }
 
-.editor-buttons ion-button:first-of-type:not(:only-of-type) {
+ion-button.delete-btn {
   --background: #ff8a8a;
+  --background-activated: #ff8a8a;
+  --background-hover: #ff8a8a;
   --color: #0c0e1f;
   --border-width: 0;
 }

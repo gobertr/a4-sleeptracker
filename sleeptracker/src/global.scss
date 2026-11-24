@@ -50,17 +50,6 @@ h1 {
   font-family: 'Marmelad', serif;
 }
 
-ion-tab-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: 0;
-  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
-  --background: rgba(0, 0, 0, 0.35);
-  background: rgba(0, 0, 0, 0.35);
-}
-
 .logo {
   font-family: 'Marmelad', serif;
   font-size: 46px;
@@ -97,4 +86,12 @@ body {
 body.awake {
   --bg-top: #3a4690;
   --bg-bottom: #1c2350;
+}
+
+ion-tab-button ion-icon {
+  margin-top: -10px;
+}
+
+ion-tab-bar {
+  height: 80px;
 }

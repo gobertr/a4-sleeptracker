@@ -3,7 +3,7 @@
     <h1 class="logo">sleepi</h1>
 
     <div class="middle">
-      <p class="label">{{ sleepStart === null ? 'You are awake' : 'You are asleep' }}</p>
+      <p class="label">{{ sleepStart === null ? 'Last sleep session' : 'You are asleep' }}</p>
       <p class="big-time">{{ timer }}</p>
       <p class="since">{{ sinceText }}</p>
     </div>
@@ -13,7 +13,7 @@
         {{ sleepStart === null ? 'Go to sleep' : 'Wake up' }}
       </ion-button>
       <ion-button expand="block" fill="clear" [class.hidden]="sleepStart === null" (click)="cancelSleep()">
-        Cancel, I didn't mean to
+        Cancel current sleep session.
       </ion-button>
     </div>
   </main>

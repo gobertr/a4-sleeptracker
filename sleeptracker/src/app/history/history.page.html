@@ -137,7 +137,7 @@
         @if (confirmingDelete) {
           <h2>Delete this entry?</h2>
           <p class="rating-note">This can't be undone.</p>
-          <ion-button expand="block" color="danger" (click)="deleteEntry()">Delete</ion-button>
+          <ion-button expand="block" class="delete-btn" (click)="deleteEntry()">Delete</ion-button>
           <ion-button expand="block" fill="clear" (click)="cancelDelete()">Keep it</ion-button>
         } @else {
           @if (editType === 'overnight') {
@@ -166,7 +166,7 @@
 
           <div class="editor-buttons">
             @if (editMode === 'edit') {
-              <ion-button fill="outline" (click)="askDelete()">Delete</ion-button>
+              <ion-button fill="outline" class="delete-btn" (click)="askDelete()">Delete</ion-button>
             }
             <ion-button (click)="save()">{{ editMode === 'add' ? 'Add' : 'Save' }}</ion-button>
           </div>

@@ -11,8 +11,9 @@ import { SleepService } from '../services/sleep.service';
 })
 export class HomePage {
   sleepStart: Date | null = null;
-  lastWake: Date | null = null;
-  timer = '--';
+  lastDuration = '';
+  lastWakeText = '';
+  timer = '';
   sinceText = '';
 
   constructor(private sleepService: SleepService) {
@@ -22,34 +23,40 @@ export class HomePage {
     }
     let savedWake = localStorage.getItem('lastWake');
     if (savedWake) {
-      this.lastWake = new Date(savedWake);
+      this.lastDuration = localStorage.getItem('lastDuration') || '';
+      this.lastWakeText = localStorage.getItem('lastWakeText') || '';
     }
     this.updateTime();
     setInterval(() => {
       this.updateTime();
-    }, 1000);
+    }, 200);
   }
 
   updateTime() {
-    let since = this.sleepStart;
-    if (since === null) {
-      since = this.lastWake;
-    }
-    if (since === null) {
+    let asleep = this.sleepStart !== null;
+    document.body.classList.toggle('asleep', asleep);
+    document.body.classList.toggle('awake', !asleep);
+
+    if (this.sleepStart === null) {
+    if (this.lastDuration === '') {
       this.timer = '--';
       this.sinceText = 'No sleep logged yet';
-      return;
+    } else {
+      this.timer = this.lastDuration;
+      this.sinceText = this.lastWakeText;
     }
-    let ms = new Date().getTime() - since.getTime();
-    let hours = Math.floor(ms / 3600000);
-    let minutes = Math.floor((ms % 3600000) / 60000);
-    let seconds = Math.floor((ms % 60000) / 1000);
-    this.timer = hours + 'h ' + minutes + 'm ' + seconds + 's';
-    this.sinceText = 'Since ' + since.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    return;
+  }
+
+  let ms = new Date().getTime() - this.sleepStart.getTime();
+  let hours = Math.floor(ms / 3600000);
+  let minutes = Math.floor((ms % 3600000) / 60000);
+  let seconds = Math.floor((ms % 60000) / 1000);
+  this.timer = hours + 'h ' + minutes + 'm ' + seconds + 's';
+  this.sinceText = 'Since ' + this.sleepStart.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
   }
 
   toggleSleep() {
-    document.body.classList.toggle('awake', this.sleepStart === null);
     if (this.sleepStart === null) {
       this.goToSleep();
     } else {
@@ -70,8 +77,15 @@ export class HomePage {
     let now = new Date();
     let entry = new OvernightSleepData(this.sleepStart, now);
     await this.sleepService.logOvernightData(entry);
-    this.lastWake = now;
-    localStorage.setItem('lastWake', now.toISOString());
+
+    let ms = now.getTime() - this.sleepStart.getTime();
+    let hours = Math.floor(ms / 3600000);
+    let minutes = Math.floor((ms % 3600000) / 60000);
+    this.lastDuration = hours + 'h ' + minutes + 'm';
+    this.lastWakeText = 'Woke up at ' + now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    localStorage.setItem('lastDuration', this.lastDuration);
+    localStorage.setItem('lastWakeText', this.lastWakeText);
+
     this.sleepStart = null;
     localStorage.removeItem('sleepStart');
     this.updateTime();
