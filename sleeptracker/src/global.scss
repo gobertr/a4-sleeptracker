@@ -38,10 +38,63 @@
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
 
-h1 {
+h1, h2, h3, h4, h5, h6 {
   text-align: center;
+}
+
+ion-label h3, ion-label p {
+  text-align: left;
 }
 
 h1 {
   font-family: 'Marmelad', serif;
+}
+
+ion-tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+  --background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.logo {
+  font-family: 'Marmelad', serif;
+  font-size: 46px;
+  font-weight: 400;
+  margin: 0 0 24px;
+  text-align: center;
+}
+
+ion-content {
+  --background: transparent;
+  --color: #e8eaf6;
+}
+
+@property --bg-top {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #0a0c1c;
+}
+
+@property --bg-bottom {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #05060f;
+}
+
+body {
+  --bg-top: #0a0c1c;
+  --bg-bottom: #05060f;
+  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+  background-attachment: fixed;
+  transition: --bg-top 1.5s, --bg-bottom 1.5s;
+}
+
+body.awake {
+  --bg-top: #3a4690;
+  --bg-bottom: #1c2350;
 }

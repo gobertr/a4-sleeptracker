@@ -81,6 +81,38 @@ export class SleepService {
 
     overnight.sort((a, b) => b.sleepStart.getTime() - a.sleepStart.getTime());
     sleepiness.sort((a, b) => b.loggedAt.getTime() - a.loggedAt.getTime());
-    return { overnight, sleepiness };
+        return { overnight, sleepiness };
+  }
+
+  async deleteOvernight(id: string) {
+    const storage = await this.openStorage();
+    await storage.remove('overnight-' + id);
+  }
+
+  async deleteSleepiness(id: string) {
+    const storage = await this.openStorage();
+    await storage.remove('sleepiness-' + id);
+  }
+
+  async updateOvernight(id: string, sleepStart: Date, sleepEnd: Date) {
+    const storage = await this.openStorage();
+    const old: SavedOvernight = await storage.get('overnight-' + id);
+    const saved: SavedOvernight = {
+      id: id,
+      sleepStart: sleepStart.toISOString(),
+      sleepEnd: sleepEnd.toISOString(),
+      loggedAt: old.loggedAt,
+    };
+    await storage.set('overnight-' + id, saved);
+  }
+
+  async updateSleepiness(id: string, rating: number, loggedAt: Date) {
+    const storage = await this.openStorage();
+    const saved: SavedSleepiness = {
+      id: id,
+      rating: rating,
+      loggedAt: loggedAt.toISOString(),
+    };
+    await storage.set('sleepiness-' + id, saved);
   }
 }

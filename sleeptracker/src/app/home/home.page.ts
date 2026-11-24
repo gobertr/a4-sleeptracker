@@ -49,6 +49,7 @@ export class HomePage {
   }
 
   toggleSleep() {
+    document.body.classList.toggle('awake', this.sleepStart === null);
     if (this.sleepStart === null) {
       this.goToSleep();
     } else {

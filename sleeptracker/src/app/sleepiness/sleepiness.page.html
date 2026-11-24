@@ -1,18 +1,21 @@
 <ion-content>
   <main class="sleepiness-page">
+    <h1 class="logo">sleepi</h1>
     <h2>Log sleepiness</h2>
 
-    @for (level of levels; track level) {
-      <button class="scale-row" [class.selected]="rating === level" (click)="rating = level">
-        <span class="scale-number">{{ level }}</span>
-        <span class="scale-text">{{ scale[level] }}</span>
-      </button>
-    }
+    <div class="scale-card">
+      @for (level of levels; track level) {
+        <button class="scale-row" [class.selected]="rating === level" (click)="rating = level">
+          <span class="scale-number">{{ level }}</span>
+          <span class="scale-text">{{ scale[level] }}</span>
+        </button>
+      }
+    </div>
 
-    <p>How sleepy do you feel right now?</p>
+    <p class="prompt">How sleepy do you feel right now?</p>
 
     <ion-button expand="block" [disabled]="rating === null" (click)="save()">Submit</ion-button>
 
-    <p>{{ message }}</p>
+    <p class="message">{{ message }}</p>
   </main>
 </ion-content>

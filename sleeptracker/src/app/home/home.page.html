@@ -1,17 +1,20 @@
 <ion-content>
   <main class="sleep-page">
-    <h1>sleepi</h1>
+    <h1 class="logo">sleepi</h1>
 
-    <p class="label">{{ sleepStart === null ? 'You are awake' : 'You are sleeping' }}</p>
-    <p class="big-time">{{ timer }}</p>
-    <p class="since">{{ sinceText }}</p>
+    <div class="middle">
+      <p class="label">{{ sleepStart === null ? 'You are awake' : 'You are asleep' }}</p>
+      <p class="big-time">{{ timer }}</p>
+      <p class="since">{{ sinceText }}</p>
+    </div>
 
-    <ion-button expand="block" (click)="toggleSleep()">
-      {{ sleepStart === null ? 'Go to sleep' : 'Wake up' }}
-    </ion-button>
-
-    @if (sleepStart !== null) {
-      <ion-button expand="block" fill="clear" (click)="cancelSleep()">Cancel this sleep session</ion-button>
-    }
+    <div class="bottom">
+      <ion-button expand="block" (click)="toggleSleep()">
+        {{ sleepStart === null ? 'Go to sleep' : 'Wake up' }}
+      </ion-button>
+      <ion-button expand="block" fill="clear" [class.hidden]="sleepStart === null" (click)="cancelSleep()">
+        Cancel, I didn't mean to
+      </ion-button>
+    </div>
   </main>
 </ion-content>

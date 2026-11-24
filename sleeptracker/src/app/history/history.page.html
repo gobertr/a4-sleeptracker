@@ -1,47 +1,178 @@
 <ion-content>
   <main class="history-page">
-    @if (loading) {
-      <p role="status">Loading your logs…</p>
-    } @else if (loadFailed) {
-      <p role="alert">Couldn't load your logs.</p>
-      <ion-button (click)="loadLogs()">Try again</ion-button>
-    } @else {
-      <section aria-labelledby="overnight-history-title">
-        <h2 id="overnight-history-title">Overnight sleep</h2>
-        @if (overnight.length) {
-          <ion-list class="history-list">
-            @for (entry of overnight; track entry.id; let last = $last) {
-              <ion-item [lines]="last ? 'none' : 'inset'">
-                <ion-label class="ion-text-wrap">
-                  <h3>{{ entry.summaryString() }}</h3>
-                  <p>Bedtime {{ entry.sleepStart | date:'MMM d, y, h:mm a' }}</p>
-                  <p>Wake-up {{ entry.sleepEnd | date:'MMM d, y, h:mm a' }}</p>
-                </ion-label>
-              </ion-item>
-            }
-          </ion-list>
-        } @else {
-          <p class="empty-history">No overnight sleep logged yet.</p>
-        }
-      </section>
+    <h1 class="logo">sleepi</h1>
 
-      <section aria-labelledby="sleepiness-history-title">
-        <h2 id="sleepiness-history-title">Daytime sleepiness</h2>
-        @if (sleepiness.length) {
-          <ion-list class="history-list">
-            @for (entry of sleepiness; track entry.id; let last = $last) {
-              <ion-item [lines]="last ? 'none' : 'inset'">
-                <ion-label class="ion-text-wrap">
-                  <h3>{{ entry.summaryString() }}</h3>
-                  <p>{{ entry.loggedAt | date:'MMM d, y, h:mm a' }}</p>
-                </ion-label>
-              </ion-item>
+    <div class="card chart-card">
+      <h2>hours of sleep</h2>
+      <div class="chart">
+        <div class="y-axis">
+          <div class="axis-track">
+            @for (tick of sleepTicks; track tick.label) {
+              <span class="tick" [style.bottom.%]="tick.pos">{{ tick.label }}<span class="line"></span></span>
             }
-          </ion-list>
-        } @else {
-          <p class="empty-history">No daytime sleepiness logged yet.</p>
-        }
-      </section>
-    }
+          </div>
+          <span class="bar-label spacer">Sun</span>
+        </div>
+        <div class="bars">
+          @for (bar of sleepBars; track $index) {
+            <div class="bar-column">
+              <div class="bar-track">
+                <div class="bar sleep-bar" [style.height.%]="bar.height">
+                  <span class="bar-value">{{ bar.value }}</span>
+                </div>
+              </div>
+              <span class="bar-label">{{ bar.label }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="card chart-card">
+      <h2>sleepiness</h2>
+      <div class="chart">
+        <div class="y-axis">
+          <div class="axis-track">
+            @for (tick of sleepinessTicks; track tick.label) {
+              <span class="tick" [style.bottom.%]="tick.pos">{{ tick.label }}<span class="line"></span></span>
+            }
+          </div>
+          <span class="bar-label spacer">Sun</span>
+        </div>
+        <div class="bars">
+          @for (bar of sleepinessBars; track $index) {
+            <div class="bar-column">
+              <div class="bar-track">
+                <div class="bar sleepiness-bar" [style.height.%]="bar.height">
+                  <span class="bar-value">{{ bar.value }}</span>
+                </div>
+              </div>
+              <span class="bar-label">{{ bar.label }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="card stat">
+        <p class="stat-title">Daily sleep average</p>
+        <p class="stat-number">{{ sleepAverage }}</p>
+      </div>
+      <div class="card stat">
+        <p class="stat-title">Average sleepiness</p>
+        <p class="stat-number">{{ sleepinessAverage }} / 7</p>
+        <p class="stat-note">{{ sleepinessNote }}</p>
+      </div>
+    </div>
+
+    <button class="pull-button" (click)="openList()">
+      <ion-icon name="chevron-up"></ion-icon>
+      <span>See all entries</span>
+    </button>
   </main>
+
+  <div slot="fixed" class="layer">
+    <div class="sheet-scrim" [class.show]="listOpen" (click)="closeList()"></div>
+
+    <div class="sheet" [class.open]="listOpen">
+      <button class="pull-button" (click)="closeList()">
+        <ion-icon name="chevron-down"></ion-icon>
+        <span>Hide entries</span>
+      </button>
+
+      <div class="sheet-tabs">
+        <button class="sheet-tab" [class.active]="listTab === 'sleep'" (click)="showTab('sleep')">Sleep</button>
+        <button class="sheet-tab" [class.active]="listTab === 'sleepiness'" (click)="showTab('sleepiness')">Sleepiness</button>
+      </div>
+
+      <div class="sheet-body">
+        @if (listTab === 'sleep') {
+          @if (overnight.length) {
+            <p class="hint">Tap an entry to edit it</p>
+            <ion-list class="entry-list">
+              @for (entry of overnight; track entry.id) {
+                <ion-item [button]="true" [detail]="false" (click)="openOvernight(entry)">
+                  <ion-label>
+                    <h3>{{ entry.summaryString() }}</h3>
+                    <p>{{ entry.sleepStart | date:'MMM d, h:mm a' }} to {{ entry.sleepEnd | date:'MMM d, h:mm a' }}</p>
+                  </ion-label>
+                </ion-item>
+              }
+            </ion-list>
+          } @else {
+            <p class="empty">No overnight sleep logged yet.</p>
+          }
+        } @else {
+          @if (sleepiness.length) {
+            <p class="hint">Tap an entry to edit it</p>
+            <ion-list class="entry-list">
+              @for (entry of sleepiness; track entry.id) {
+                <ion-item [button]="true" [detail]="false" (click)="openSleepiness(entry)">
+                  <ion-label>
+                    <h3>Sleepiness {{ entry.loggedValue }} of 7</h3>
+                    <p>{{ entry.loggedAt | date:'MMM d, h:mm a' }}</p>
+                  </ion-label>
+                </ion-item>
+              }
+            </ion-list>
+          } @else {
+            <p class="empty">No daytime sleepiness logged yet.</p>
+          }
+        }
+      </div>
+
+      <div class="sheet-footer">
+        <ion-button expand="block" (click)="openAdd()">
+          <ion-icon slot="start" name="add"></ion-icon>
+          Add entry
+        </ion-button>
+      </div>
+    </div>
+
+    <div class="edit-layer" [class.show]="editType !== ''">
+      <div class="edit-scrim" (click)="closeEditor()"></div>
+
+            <div class="editor">
+        @if (confirmingDelete) {
+          <h2>Delete this entry?</h2>
+          <p class="rating-note">This can't be undone.</p>
+          <ion-button expand="block" color="danger" (click)="deleteEntry()">Delete</ion-button>
+          <ion-button expand="block" fill="clear" (click)="cancelDelete()">Keep it</ion-button>
+        } @else {
+          @if (editType === 'overnight') {
+            <h2>{{ editMode === 'add' ? 'Add sleep' : 'Edit sleep' }}</h2>
+
+            <label for="edit-start">Bedtime</label>
+            <input #startInput id="edit-start" type="datetime-local" [value]="editStart" (input)="editStart = startInput.value">
+
+            <label for="edit-end">Wake-up time</label>
+            <input #endInput id="edit-end" type="datetime-local" [value]="editEnd" (input)="editEnd = endInput.value">
+          } @else {
+            <h2>{{ editMode === 'add' ? 'Add sleepiness' : 'Edit sleepiness' }}</h2>
+
+            <div class="rating-row">
+              @for (level of levels; track level) {
+                <button class="rating-button" [class.selected]="editRating === level" (click)="editRating = level">{{ level }}</button>
+              }
+            </div>
+            <p class="rating-note">{{ scale[editRating] }}</p>
+
+            <label for="edit-time">Time</label>
+            <input #timeInput id="edit-time" type="datetime-local" [value]="editTime" (input)="editTime = timeInput.value">
+          }
+
+          <p class="error">{{ editError }}</p>
+
+          <div class="editor-buttons">
+            @if (editMode === 'edit') {
+              <ion-button fill="outline" (click)="askDelete()">Delete</ion-button>
+            }
+            <ion-button (click)="save()">{{ editMode === 'add' ? 'Add' : 'Save' }}</ion-button>
+          </div>
+          <ion-button class="cancel-button" fill="clear" expand="block" (click)="closeEditor()">Cancel</ion-button>
+        }
+      </div>
+    </div>
+  </div>
 </ion-content>
